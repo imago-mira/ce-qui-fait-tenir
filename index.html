@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ce qui fait tenir — Dashboard Gratuit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --Y: #FFD15C; --P: #511A49; --W: #FFFFFF; --BG: #F2B9B5; }
+    body { font-family: Arial, sans-serif; background: var(--BG); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* NAV */
+    .nav { background: var(--P); display: grid; grid-template-columns: minmax(160px,1fr) auto minmax(0,1fr); align-items: center; flex-shrink: 0; padding: 0 16px; }
+    .nav-logo { display: flex; align-items: center; gap: 8px; }
+    .nav-logo-icon { background: var(--Y); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--P); font-size: 16px; font-weight: 900; }
+    .nav-logo-title { font-family: "Arial Black", Arial, sans-serif; font-size: clamp(10px,1.1vw,12px); color: var(--Y); letter-spacing: 0.04em; white-space: nowrap; line-height: 1.3; }
+    .nav-logo-sub { font-size: clamp(9px,0.9vw,10px); color: var(--W); opacity: 0.72; white-space: nowrap; }
+    .nav-tabs { display: flex; gap: clamp(4px,1.5vw,16px); }
+    .nav-tab { background: transparent; border: none; border-bottom: 2px solid transparent; padding: 10px 8px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; opacity: 0.72; transition: opacity 0.2s; flex-shrink: 0; color: var(--W); font-family: Arial, sans-serif; font-size: 10px; white-space: nowrap; }
+    .nav-tab.active { opacity: 1; border-bottom-color: var(--Y); font-weight: 700; }
+    .nav-tab svg { width: 13px; height: 13px; }
+
+    /* LAYOUT */
+    .main { flex: 1; display: flex; justify-content: center; padding: 10px 14px; min-height: 0; }
+    .card-wrap { width: 100%; max-width: 500px; height: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 32px rgba(81,26,73,0.22); }
+    .page { display: none; flex-direction: column; height: 100%; background: var(--Y); }
+    .page.active { display: flex; }
+    .band { background: rgba(255,255,255,0.26); height: 8px; width: 100%; flex-shrink: 0; }
+    .page-content { flex: 1; padding: 14px 20px 10px; display: flex; flex-direction: column; overflow: auto; }
+
+    /* COMPONENTS */
+    .white-card { background: var(--W); border-radius: 10px; padding: 11px 15px; margin: 5px 0; box-shadow: 0 2px 10px rgba(81,26,73,0.12); }
+    .white-card.faded { background: rgba(255,255,255,0.6); box-shadow: none; }
+    .badge { background: var(--P); color: var(--Y); font-family: "Arial Black", Arial, sans-serif; font-size: 9px; padding: 2px 9px; border-radius: 20px; letter-spacing: 0.06em; flex-shrink: 0; }
+    .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .title-label { font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: clamp(13px,1.8vw,16px); color: var(--P); letter-spacing: 0.06em; text-transform: uppercase; }
+    .title-divider { height: 1px; background: var(--P); opacity: 0.25; margin-bottom: 12px; }
+    .body-text { font-size: clamp(12px,1.5vw,14px); color: var(--P); line-height: 1.72; margin-bottom: 9px; }
+    .sig { font-style: italic; font-size: 11px; color: var(--P); text-align: right; margin-top: auto; padding-top: 6px; }
+
+    /* COVER */
+    .cover-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 28px 24px; text-align: center; }
+    .cover-badge { background: var(--P); color: var(--Y); padding: 3px 14px; border-radius: 20px; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; font-weight: bold; }
+    .cover-title { font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: clamp(40px,9vw,80px); color: var(--P); line-height: 1; letter-spacing: 0.04em; margin: 0 0 14px; }
+    .cover-sub { font-style: italic; font-size: clamp(12px,1.5vw,15px); color: var(--P); margin: 0 0 20px; }
+    .cover-line { width: 50%; height: 1px; background: var(--P); opacity: 0.2; margin: 0 0 20px; }
+    .cover-cta { font-size: clamp(10px,1.2vw,12px); color: var(--P); font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 36px; }
+    .cover-author { font-style: italic; font-size: 13px; color: var(--P); }
+
+    /* PAGE 3 */
+    .form-card { margin: 4px 0; padding: 9px 13px; }
+    .form-card-title { font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: 12px; color: var(--P); text-align: center; margin: 0 0 4px; }
+    .form-card-divider { height: 1px; background: var(--P); opacity: 0.12; margin: 0 0 6px; }
+    .form-card-desc { font-style: italic; font-size: 13px; color: var(--P); text-align: center; line-height: 1.5; margin: 0 0 5px; }
+    .form-card-ex { font-style: italic; font-size: 12px; color: var(--P); text-align: center; line-height: 1.45; opacity: 0.82; margin: 0 0 5px; }
+    .form-card-concl { font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: 10px; color: var(--P); text-align: center; margin: 0; }
+
+    /* TEXTAREA */
+    .note-area { width: 100%; min-height: 70px; background: rgba(255,213,92,0.18); border: 1px solid rgba(81,26,73,0.18); border-radius: 7px; padding: 8px 10px; font-family: Arial, sans-serif; font-size: 11px; color: var(--P); resize: vertical; outline: none; }
+    .arrow-item { font-size: 12px; color: var(--P); font-weight: bold; margin: 0 0 4px; display: flex; gap: 7px; }
+
+    /* PAGE 4 */
+    .p4-title { font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: clamp(13px,1.7vw,15px); color: var(--P); line-height: 1.4; text-align: center; }
+    .steps-grid { display: grid; grid-template-columns: 86px 1fr; gap: 8px; align-items: start; margin-bottom: 7px; }
+    .step-label { font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: 11px; color: var(--P); }
+    .step-text { font-size: 11px; color: var(--P); line-height: 1.45; }
+    .card-steps-divider { border-top: 1px solid rgba(81,26,73,0.12); padding-top: 8px; display: flex; flex-direction: column; gap: 7px; }
+    .cta-btn { background: var(--P); color: var(--W); border-radius: 40px; padding: 11px 24px; font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: 12px; cursor: pointer; letter-spacing: 0.02em; text-decoration: none; display: inline-block; }
+
+    /* BOTTOM NAV */
+    .bottom-nav { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 6px 0 10px; flex-shrink: 0; }
+    .nav-btn { border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--Y); }
+    .nav-btn:disabled { background: rgba(81,26,73,0.1); cursor: not-allowed; }
+    .page-count { font-size: 11px; color: rgba(81,26,73,0.5); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">&#9889;</div>
+    <div>
+      <div class="nav-logo-title">CE QUI FAIT TENIR</div>
+      <div class="nav-logo-sub">Dashboard gratuit</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goTo(0)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Intro
+    </button>
+    <button class="nav-tab" onclick="goTo(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Un jour
+    </button>
+    <button class="nav-tab" onclick="goTo(2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+      Carburant
+    </button>
+    <button class="nav-tab" onclick="goTo(3)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      3 formes
+    </button>
+    <button class="nav-tab" onclick="goTo(4)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      Et apr&#232;s ?
+    </button>
+  </div>
+  <div></div>
+</nav>
+
+<main class="main">
+  <div class="card-wrap">
+
+    <!-- PAGE 0 -->
+    <div id="page-0" class="page active">
+      <div class="band"></div>
+      <div class="cover-content">
+        <div class="cover-badge">Dashboard Gratuit</div>
+        <h1 class="cover-title">CE QUI<br>FAIT<br>TENIR</h1>
+        <p class="cover-sub">pour ne plus vouloir tout abandonner</p>
+        <div class="cover-line"></div>
+        <p class="cover-cta">Cr&#233;e ton propre carburant</p>
+        <p class="cover-author">Manuella</p>
+      </div>
+      <div class="band"></div>
+    </div>
+
+    <!-- PAGE 1 -->
+    <div id="page-1" class="page">
+      <div class="band"></div>
+      <div class="page-content">
+        <div style="margin-bottom:12px"><div class="title-row"><span class="badge">01</span><span class="title-label">Il y a eu un jour</span></div><div class="title-divider"></div></div>
+        <p class="body-text">Il y a eu un jour o&#249; j&apos;ai re&#231;u un message sur mon travail. Un simple vocal. Quelques secondes.</p>
+        <p class="body-text">Je l&apos;ai &#233;cout&#233;. R&#233;&#233;cout&#233;. Encore. Pas parce que j&apos;en avais besoin ce jour-l&#224;. Mais les semaines suivantes, quand le doute est revenu, et il est toujours revenu, quand j&apos;ai failli tout l&#226;cher, c&apos;est ce vocal que j&apos;allais chercher.</p>
+        <div class="white-card" style="margin:5px 0 20px"><p class="body-text" style="font-style:italic;text-align:center;margin:0">&ldquo;Ce n&apos;est pas la motivation qui fait tenir.<br>C&apos;est le carburant qu&apos;on a constitu&#233; avant la panne.&rdquo;</p></div>
+        <p class="body-text">Sauf que j&apos;avais un probl&#232;me&nbsp;: je d&#233;pendais de quelqu&apos;un d&apos;autre pour l&apos;avoir. Je ne pouvais pas d&#233;cider quand il arrivait. Ni m&#234;me s&apos;il arriverait un jour.</p>
+        <p class="body-text">Alors j&apos;ai appris &#224; en cr&#233;er moi-m&#234;me. &#192; reconna&#238;tre ce qui me recharge vraiment. &#192; le stocker. &#192; y revenir quand j&apos;en ai besoin. C&apos;est exactement ce qu&apos;on va faire ensemble ici.</p>
+        <p class="body-text" style="font-weight:bold">Je ne te donne pas un poisson. Je t&apos;apprends &#224; p&#234;cher.</p>
+        <p class="sig">Manuella</p>
+      </div>
+      <div class="band"></div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div id="page-2" class="page">
+      <div class="band"></div>
+      <div class="page-content">
+        <div style="margin-bottom:12px"><div class="title-row"><span class="badge">02</span><span class="title-label">Trouve ton premier carburant</span></div><div class="title-divider"></div></div>
+        <p class="body-text">La plupart d&apos;entre nous ont d&#233;j&#224; v&#233;cu ce moment. On a souri, on a ressenti quelque chose de chaud dans la poitrine, et on l&apos;a laiss&#233; filer. Il est temps de le retrouver.</p>
+        <div class="white-card">
+          <p style="font-style:italic;font-size:clamp(11px,1.4vw,12px);color:var(--P);line-height:1.6;text-align:center;margin:0 0 10px">&ldquo;Y a-t-il un message, un vocal, une image que tu as re&#231;u sur ton travail et que tu relis encore parfois, parce que &#231;a t&apos;a rendue fi&#232;re, heureuse, ou vivante&nbsp;? D&#233;cris ce moment.&rdquo;</p>
+          <textarea id="note-area" class="note-area" placeholder="&#201;cris ici..."></textarea>
+        </div>
+        <p class="body-text">Prends le temps d&apos;y r&#233;pondre vraiment. Un email. Un commentaire. Un vocal. Un retour que tu n&apos;attendais pas.</p>
+        <p class="arrow-item"><span>&#8594;</span><span>Sauvegarde-le quelque part d&apos;accessible.</span></p>
+        <p class="arrow-item"><span>&#8594;</span><span>Nomme-le. C&apos;est ton premier carburant.</span></p>
+        <div class="white-card faded" style="margin-top:6px"><p style="font-style:italic;font-size:12px;color:var(--P);line-height:1.65;margin:0">Tu n&apos;en trouves pas encore&nbsp;? C&apos;est ok. Note le moment que tu attends, le retour que tu voudrais recevoir. Ce que tu &#233;cris l&#224; est d&#233;j&#224; une information pr&#233;cieuse sur ce qui compte vraiment pour toi.</p></div>
+        <p class="sig">Manuella</p>
+      </div>
+      <div class="band"></div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div id="page-3" class="page">
+      <div class="band"></div>
+      <div class="page-content">
+        <div style="margin-bottom:12px"><div class="title-row"><span class="badge">03</span><span class="title-label">Les 3 formes de carburant</span></div><div class="title-divider"></div></div>
+        <p class="body-text">Le carburant ne prend pas toujours la m&#234;me forme. Trois types, trois besoins diff&#233;rents.</p>
+        <div class="white-card form-card">
+          <p class="form-card-title">Le moment-preuve</p><div class="form-card-divider"></div>
+          <p class="form-card-desc">Un retour ext&#233;rieur qui t&#233;moigne que ton travail a eu un impact.</p>
+          <p class="form-card-ex">Un message d&apos;une cliente touch&#233;e. Un commentaire inattendu. Une vente qui t&apos;a surprise.</p>
+          <p class="form-card-concl">CE QUE TU FAIS COMPTE.</p>
+        </div>
+        <div class="white-card form-card">
+          <p class="form-card-title">Le geste-ancre</p><div class="form-card-divider"></div>
+          <p class="form-card-desc">Un acte simple que tu peux faire seule, qui te reconnecte &#224; toi.</p>
+          <p class="form-card-ex">Rouvrir ton premier projet. Relire pourquoi tu as commenc&#233;. Regarder une cr&#233;ation dont tu es fi&#232;re.</p>
+          <p class="form-card-concl">JE SUIS ENCORE L&#192;, ET C&apos;EST BIEN MOI.</p>
+        </div>
+        <div class="white-card form-card">
+          <p class="form-card-title">La vision-ressource</p><div class="form-card-divider"></div>
+          <p class="form-card-desc">Une image, une phrase, une sc&#232;ne future qui te tire vers l&apos;avant.</p>
+          <p class="form-card-ex">Ce que tu veux construire. Ce que tu veux ressentir. La cr&#233;atrice que tu deviens.</p>
+          <p class="form-card-concl">IL Y A UN APR&#200;S.</p>
+        </div>
+        <div style="text-align:center;margin-top:8px">
+          <p style="font-style:italic;font-size:13px;color:var(--P);margin:0 0 3px">Lequel te parle le plus aujourd&apos;hui&nbsp;?</p>
+          <p style="font-family:Arial Black,Arial,sans-serif;font-weight:900;font-size:13px;color:var(--P);margin:0">Note-le. C&apos;est le d&#233;but de ta r&#233;serve.</p>
+        </div>
+        <p class="sig">Manuella</p>
+      </div>
+      <div class="band"></div>
+    </div>
+
+    <!-- PAGE 4 -->
+    <div id="page-4" class="page">
+      <div class="band"></div>
+      <div class="page-content">
+        <div style="margin-bottom:12px"><div class="title-row"><span class="badge">04</span><span class="title-label">Et maintenant&nbsp;?</span></div><div class="title-divider"></div></div>
+        <p class="body-text">Tu viens d&apos;identifier ton premier carburant. C&apos;est d&#233;j&#224; plus que ce que font la plupart des entrepreneures. Elles avancent &#224; bout de souffle, en esp&#233;rant que la motivation revienne. Elle revient. Puis elle repart.</p>
+        <div style="text-align:center;margin:6px 0"><p class="p4-title">Tenir, vraiment, &#231;a s&apos;apprend.</p><p class="p4-title">&#199;a se construit. &#199;a se pratique.</p></div>
+        <div class="white-card" style="padding:10px 13px">
+          <p style="font-size:11px;color:var(--P);line-height:1.5;margin:0 0 8px">Dans le programme <strong>Ce qui fait tenir</strong>, je t&apos;accompagne sur trois &#233;tapes&nbsp;:</p>
+          <div class="card-steps-divider">
+            <div class="steps-grid"><span class="step-label">IDENTIFIER</span><span class="step-text">tout ce qui te recharge, m&#234;me ce que tu n&apos;avais jamais nomm&#233;.</span></div>
+            <div class="steps-grid"><span class="step-label">CONSTRUIRE</span><span class="step-text">de nouveaux carburants consciemment, sans attendre qu&apos;ils arrivent par hasard.</span></div>
+            <div class="steps-grid"><span class="step-label">ACTIVER</span><span class="step-text">le r&#233;flexe, pas la d&#233;pendance. Pour ne plus jamais avancer &#224; bout de souffle.</span></div>
+          </div>
+        </div>
+        <p style="font-style:italic;text-align:center;font-size:13px;color:var(--P);line-height:1.6;margin:5px 0">Ce n&apos;est pas une formation de plus. Ce n&apos;est pas un coaching classique.<br>C&apos;est le cadre que tu t&apos;appropries. Pour apprendre &#224; tenir, par toi-m&#234;me.</p>
+        <div style="text-align:center;margin-bottom:4px"><a href="https://imagomira.store/ce-qui-fait-tenir" target="_blank" class="cta-btn">&#8635; Je veux apprendre &#224; tenir</a></div>
+        <p class="sig">Manuella</p>
+      </div>
+      <div class="band"></div>
+    </div>
+
+  </div>
+</main>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="btn-prev" onclick="prevPage()" disabled>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#511A49" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="page-count" id="page-count">1 / 5</span>
+  <button class="nav-btn" id="btn-next" onclick="nextPage()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#511A49" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+  var cur = 0, total = 5;
+  var noteArea = document.getElementById("note-area");
+  noteArea.value = localStorage.getItem("cqft-notes") || "";
+  noteArea.addEventListener("input", function() { localStorage.setItem("cqft-notes", noteArea.value); });
+
+  function goTo(n) {
+    document.getElementById("page-" + cur).classList.remove("active");
+    document.querySelectorAll(".nav-tab")[cur].classList.remove("active");
+    cur = n;
+    document.getElementById("page-" + cur).classList.add("active");
+    document.querySelectorAll(".nav-tab")[cur].classList.add("active");
+    document.getElementById("page-count").textContent = (cur + 1) + " / " + total;
+    var prev = document.getElementById("btn-prev");
+    var next = document.getElementById("btn-next");
+    prev.disabled = cur === 0;
+    next.disabled = cur === total - 1;
+    prev.style.background = cur === 0 ? "rgba(81,26,73,0.1)" : "#FFD15C";
+    next.style.background = cur === total - 1 ? "rgba(81,26,73,0.1)" : "#FFD15C";
+  }
+  function prevPage() { if (cur > 0) goTo(cur - 1); }
+  function nextPage() { if (cur < total - 1) goTo(cur + 1); }
+</script>
+</body>
+</html>
