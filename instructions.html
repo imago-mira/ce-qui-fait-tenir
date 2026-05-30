@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instructions — Carnet de Bord</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --Y:#FFD15C;
+      --P:#511A49;
+      --BG:#F2B9B5;
+      --PAPER:#F5F2EA;
+      --INK:#3a2510;
+    }
+    html,body{min-height:100%}
+    body{
+      font-family:Georgia,serif;
+      color:var(--P);
+      background:var(--BG);
+      padding:32px 16px 64px;
+      line-height:1.65;
+    }
+
+    .sheet{
+      max-width:680px;margin:0 auto;
+      background:var(--PAPER);
+      border-radius:6px;
+      box-shadow:0 18px 40px rgba(81,26,73,.28), 0 4px 12px rgba(81,26,73,.12);
+      position:relative;
+      overflow:hidden;
+      background-image:repeating-linear-gradient(transparent 0px,transparent 31px,rgba(81,26,73,.06) 32px);
+      background-size:100% 32px;
+    }
+    .sheet::before{
+      content:"";display:block;height:10px;
+      background:var(--P);
+    }
+
+    .inner{padding:36px 44px 48px}
+
+    .title-block{
+      text-align:center;
+      margin-bottom:28px;
+      padding-bottom:22px;
+      border-bottom:1px solid rgba(81,26,73,.18);
+    }
+    .bolt{
+      display:inline-flex;align-items:center;justify-content:center;
+      background:var(--Y);color:var(--P);
+      width:44px;height:44px;border-radius:50%;
+      font-size:22px;font-weight:900;
+      margin-bottom:14px;
+      box-shadow:0 4px 10px rgba(81,26,73,.18);
+    }
+    h1{
+      font-family:"Arial Black",Arial,sans-serif;
+      font-size:24px;letter-spacing:.04em;
+      color:var(--P);
+      text-transform:uppercase;
+      line-height:1.25;
+    }
+    .subtitle{
+      font-family:Georgia,serif;font-style:italic;
+      font-size:14px;color:var(--P);opacity:.7;
+      margin-top:6px;
+    }
+
+    .lede{
+      font-family:Georgia,serif;font-style:italic;
+      font-size:16px;line-height:1.7;
+      text-align:center;
+      color:var(--P);opacity:.88;
+      margin:0 0 36px;
+    }
+    .lede em{font-weight:bold;font-style:italic}
+
+    .step{
+      background:#fff;
+      border-radius:10px;
+      padding:22px 26px 24px;
+      margin:0 0 22px;
+      box-shadow:0 3px 12px rgba(81,26,73,.10);
+      position:relative;
+    }
+    .step-head{
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:14px;
+    }
+    .step-num{
+      background:var(--P);color:var(--Y);
+      font-family:"Arial Black",Arial,sans-serif;
+      font-size:11px;letter-spacing:.05em;
+      padding:4px 11px;border-radius:30px;
+      flex-shrink:0;
+    }
+    .step-title{
+      font-family:"Arial Black",Arial,sans-serif;
+      font-size:15px;letter-spacing:.05em;
+      color:var(--P);
+      text-transform:uppercase;
+      line-height:1.3;
+    }
+    .step p{
+      font-family:Georgia,serif;
+      font-size:15px;line-height:1.7;
+      color:var(--P);
+      margin:0 0 10px;
+    }
+    .step p:last-child{margin-bottom:0}
+    .step strong{
+      font-family:"Arial Black",Arial,sans-serif;
+      font-weight:900;font-size:14px;
+      color:var(--P);
+    }
+
+    .pages-list{
+      list-style:none;
+      margin:8px 0 0;
+      padding:0;
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .pages-list li{
+      display:flex;align-items:baseline;gap:10px;
+      padding:6px 0;
+      border-bottom:1px dotted rgba(81,26,73,.15);
+      font-family:Georgia,serif;font-size:14.5px;
+    }
+    .pages-list li:last-child{border-bottom:none}
+    .page-tag{
+      font-family:"Arial Black",Arial,sans-serif;
+      font-size:10px;letter-spacing:.04em;
+      color:var(--P);
+      background:var(--Y);
+      padding:3px 8px;border-radius:20px;
+      flex-shrink:0;
+    }
+
+    .outro{
+      background:var(--Y);
+      border-radius:10px;
+      padding:24px 26px;
+      margin-top:32px;
+      box-shadow:0 3px 12px rgba(81,26,73,.10);
+      text-align:center;
+    }
+    .outro p{
+      font-family:Georgia,serif;font-style:italic;
+      font-size:14.5px;line-height:1.7;
+      color:var(--P);
+      margin:0 0 12px;
+    }
+    .outro p:last-child{margin-bottom:0}
+    .outro strong{
+      font-family:"Arial Black",Arial,sans-serif;
+      font-style:normal;font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+      font-size:13px;
+    }
+    .signature{
+      margin-top:18px;
+      font-family:Georgia,serif;font-style:italic;
+      font-size:15px;color:var(--P);
+    }
+    .signature .name{
+      font-family:"Arial Black",Arial,sans-serif;
+      font-style:normal;font-weight:900;
+      font-size:14px;letter-spacing:.04em;
+      text-transform:uppercase;
+      display:block;
+      margin-bottom:2px;
+    }
+    .signature a{color:var(--P);text-decoration:none;border-bottom:1px solid var(--P);font-style:italic;font-size:13px}
+
+    @media(max-width:560px){
+      body{padding:16px 0 32px}
+      .sheet{border-radius:0;box-shadow:none}
+      .inner{padding:24px 20px 32px}
+      h1{font-size:19px}
+      .step{padding:18px 18px 20px}
+      .step-title{font-size:13.5px}
+      .step p{font-size:14px}
+      .outro{padding:20px 18px}
+    }
+  </style>
+</head>
+<body>
+
+<article class="sheet">
+  <div class="inner">
+
+    <header class="title-block">
+      <div class="bolt">⚡</div>
+      <h1>CARNET DE BORD<br>CE QUI FAIT TENIR</h1>
+      <p class="subtitle" style="font-size: 16px; font-weight: 700">Instructions </p>
+    </header>
+
+    <p class="lede">Tu as reçu ton carnet de bord <em>Ce Qui Fait Tenir</em>.<br>Voici comment l'ouvrir et l'utiliser en deux minutes.</p>
+
+    <section class="step">
+      <div class="step-head">
+        <span class="step-num">01</span>
+        <span class="step-title">Ouvre le fichier</span>
+      </div>
+      <p>Double-clique sur le fichier <strong>ce-qui-fait-tenir.html</strong> reçu. Il s'ouvre automatiquement dans ton navigateur (Chrome, Edge ou Safari).</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <span class="step-num">02</span>
+        <span class="step-title">Navigue entre les pages</span>
+      </div>
+      <p>Utilise les onglets en haut (Couverture, Un jour, Rubriques, 3 formes, Et après ?) pour accéder aux grandes sections, ou le menu déroulant en haut dans la version mobile pour naviguer page par page.</p>
+      <p>Le carnet contient 10 pages au total, prends le temps de les parcourir dans l'ordre la première fois.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <span class="step-num">03</span>
+        <span class="step-title">Écris tes réflexions</span>
+      </div>
+      <p>Le carnet contient <strong>7 espaces d'écriture</strong> :</p>
+      <ul class="pages-list">
+        <li><span class="page-tag">PAGE 2</span> Trouve ton premier carburant</li>
+        <li><span class="page-tag">PAGE 3</span> Ce qui me ressource</li>
+        <li><span class="page-tag">PAGE 4</span> Ce que j'ai fait malgré la peur</li>
+        <li><span class="page-tag">PAGE 5</span> Mon ancre du moment</li>
+        <li><span class="page-tag">PAGE 6</span> Ce dont j'ai besoin là, maintenant</li>
+        <li><span class="page-tag">PAGE 7</span> Ma prochaine petite étape</li>
+        <li><span class="page-tag">PAGE 8</span> Espace libre</li>
+      </ul>
+      <p style="margin-top:14px">Tu n'as pas à tout remplir en une seule fois. Choisis la rubrique qui résonne aujourd'hui.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <span class="step-num">04</span>
+        <span class="step-title">Reviens quand tu veux</span>
+      </div>
+      <p>Tout ce que tu écris est sauvegardé automatiquement sur ton ordinateur. Le fichier reste chez toi, aucune connexion internet nécessaire. Tes notes sont là à chaque ouverture.</p>
+    </section>
+
+    <div class="outro">
+      <p>Ce carnet de bord est le point de départ. Il fait partie du programme<br><strong>VERY BIG BRAIN</strong> qui regroupe des solutions numériques qui t'accompagnent étape par étape.</p>
+      <p>Si tu veux aller plus loin et construire ton propre système de carburant sur la durée, clique sur le bouton en dernière page pour être informée de la sortie de<br><strong>CE QUI FAIT TENIR — LE PROGRAMME</strong>.</p>
+      <div class="signature">
+        <span class="name">Manuella</span>
+        <a href="https://imagomira.store" target="_blank">imagomira.store</a>
+      </div>
+    </div>
+
+  </div>
+</article>
+
+</body>
+</html>
